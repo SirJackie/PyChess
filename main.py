@@ -1,16 +1,33 @@
-# This is a sample Python script.
-
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+def printf(sth):
+    print(sth, end="")
 
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+class ChessBoard:
+    info = None
+    width = None
+    height = None
+
+    def Inspect(self):
+        print(self.width, self.height, self.info)
+
+    def __init__(self):
+        # self.info = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
+        self.info = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
+        self.width = 3
+        self.height = 3
+
+    def Draw(self):
+        for y in range(0, self.height):
+            printf("-------------")
+            printf("\n")
+            printf("| ")
+            for x in range(0, self.width):
+                printf(self.info[y][x])
+                printf(" | ")
+            printf("\n")
+        printf("-------------")
 
 
-# Press the green button in the gutter to run the script.
-if __name__ == '__main__':
-    print_hi('PyCharm')
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+cb = ChessBoard()
+# cb.Inspect()
+cb.Draw()
