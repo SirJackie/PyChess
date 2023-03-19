@@ -1,32 +1,40 @@
-def printf(sth):
-    print(sth, end="")
+from ChessUI.ChessUI import ChessUI
+import time
 
 
 class ChessBoard:
-    info = None
-    width = None
-    height = None
+    iMax = None
+    jMax = None
+    state = None
+    enableUI = False
+    ui = None
+
+    def __init__(self, i, j, enableUI=False):  # i行, j列; width=j, height=i
+        self.iMax = i
+        self.jMax = j
+        self.state = [[0 for j in range(0, self.jMax)] for i in range(0, self.iMax)]
+        self.enableUI = enableUI
+
+        if enableUI:
+            self.ui = ChessUI(i, j)
 
     def Inspect(self):
-        print(self.width, self.height, self.info)
-
-    def __init__(self, w, h):
-        self.width = w
-        self.height = h
-        self.info = [[0 for i in range(0, w)] for i in range(0, h)]
+        for i in range(0, self.iMax):
+            for j in range(0, self.jMax):
+                print(self.state[i][j], end="")
+            print("\n", end="")
 
     def Draw(self):
-        for y in range(0, self.height):
-            printf("-" * (1 + 4 * self.width))
-            printf("\n")
-            printf("| ")
-            for x in range(0, self.width):
-                printf(self.info[y][x])
-                printf(" | ")
-            printf("\n")
-        printf("-" * (1 + 4 * self.width))
+        self.ui.SetState(self.state)
+
+    def MakeMove(self):
+        i, j = self.ui.GetAction()
+        self.state[i][j] = 1
+        self.Draw()
+        self.Inspect()
 
 
-cb = ChessBoard(5, 5)
-# cb.Inspect()
-cb.Draw()
+cb = ChessBoard(9, 9, enableUI=True)
+
+while True:
+    cb.MakeMove()
