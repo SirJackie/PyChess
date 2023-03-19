@@ -27,9 +27,30 @@ class ChessBoard:
     def Draw(self):
         self.ui.SetState(self.state)
 
+    def MakePieceFall(self, iP, jP):
+        pass
+
+    def SimulateGravity(self, jColumn):
+        for i in range(self.iMax - 1, -1, -1):
+            if self.state[i][jColumn] != 0:
+                # Full Grid
+                pass
+            else:
+                # Empty Grid, Find one above to make it fall
+                for iPrime in range(i - 1, -1, -1):
+                    if self.state[iPrime][jColumn] != 0:
+                        # Found the Piece to Fall
+                        break
+                    else:
+                        # Continue the Finding Process
+                        pass
+                self.state[i][jColumn] = self.state[iPrime][jColumn]
+                self.state[iPrime][jColumn] = 0
+
     def MakeMove(self):
         i, j = self.ui.GetAction()
         self.state[i][j] = 1
+        self.SimulateGravity(j)
         self.Draw()
         self.Inspect()
 
