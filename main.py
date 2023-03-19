@@ -2,6 +2,9 @@ from ChessUI.ChessUI import ChessUI
 import time
 
 
+animationDuration = 0.05  # seconds
+
+
 class ChessBoard:
     iMax = None
     jMax = None
@@ -19,6 +22,7 @@ class ChessBoard:
             self.ui = ChessUI(i, j)
 
     def Inspect(self):
+        # Will Create Latency to UI, Use It Carefully
         for i in range(0, self.iMax):
             for j in range(0, self.jMax):
                 print(self.state[i][j], end="")
@@ -27,8 +31,13 @@ class ChessBoard:
     def Draw(self):
         self.ui.SetState(self.state)
 
-    def MakePieceFall(self, iP, jP):
-        pass
+    def FallingAnimation(self, jColumn, iTop, iBottom):
+        self.Draw()
+        for i in range(iTop, iBottom):
+            time.sleep(animationDuration)
+            self.state[i+1][jColumn] = self.state[i][jColumn]
+            self.state[i][jColumn] = 0
+            self.Draw()
 
     def SimulateGravity(self, jColumn):
         for i in range(self.iMax - 1, -1, -1):
@@ -44,15 +53,15 @@ class ChessBoard:
                     else:
                         # Continue the Finding Process
                         pass
-                self.state[i][jColumn] = self.state[iPrime][jColumn]
-                self.state[iPrime][jColumn] = 0
+
+                # Make the Piece Fall
+                self.FallingAnimation(jColumn, iTop=iPrime, iBottom=i)
 
     def MakeMove(self):
         i, j = self.ui.GetAction()
         self.state[i][j] = 1
         self.SimulateGravity(j)
         self.Draw()
-        self.Inspect()
 
 
 cb = ChessBoard(9, 9, enableUI=True)
