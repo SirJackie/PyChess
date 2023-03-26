@@ -31,3 +31,4 @@ jsock.SendStr("SetSize")
 jsock.SendStr(json.dumps(
     [5, 3]
 ))
+time.sleep(10000)

@@ -1,4 +1,4 @@
-from JSock import JSock
+from .JSock import JSock
 import _thread
 import json
 import time
@@ -20,7 +20,7 @@ def ControllerServer():
     global state, hasNewState, action, hasNewAction, size, hasNewSize
     global closeBridgeServer, wannaClose
 
-    jsock = JSock()
+    jsock = JSock(debug_=False)
     jsock.StartServer(16520)
 
     while True:
@@ -35,12 +35,12 @@ def ControllerServer():
                     if msg == "SetState":
                         state = json.loads(jsock.RecvStr())
                         hasNewState = True
-                        print(state)
+                        # print(state)
 
                     elif msg == "SetSize":
                         size = json.loads(jsock.RecvStr())
                         hasNewSize = True
-                        print("Size:", size)
+                        # print("Size:", size)
 
                     elif msg == "GetAction":
                         if hasNewAction:
@@ -50,7 +50,7 @@ def ControllerServer():
                             jsock.SendStr("NoNewAction")
 
         except BaseException:
-            print("An Error Occurred in Controller Server, Controller Client Might Be Closed.")
+            # print("An Error Occurred in Controller Server, Controller Client Might Be Closed.")
             wannaClose = True  # Set the wannaClose, wait for the Controlee to set closeBridgeServer
             pass
 
@@ -59,7 +59,7 @@ def ControleeServer():
     global state, hasNewState, action, hasNewAction, size, hasNewSize
     global closeBridgeServer, wannaClose
 
-    jsock = JSock()
+    jsock = JSock(debug_=False)
     jsock.StartServer(16521)
 
     while True:
@@ -98,16 +98,16 @@ def ControleeServer():
                     elif msg == "SetAction":
                         action = json.loads(jsock.RecvStr())
                         hasNewAction = True
-                        print(action)
+                        # print(action)
 
         except BaseException:
-            print("An Error Occurred in Controlee Server, Controlee Client Might Be Closed.")
+            # print("An Error Occurred in Controlee Server, Controlee Client Might Be Closed.")
             wannaClose = True  # Set the wannaClose
             closeBridgeServer = True  # Don't need to wait for the Controller, just set closeBridgeServer
             pass
 
 
-if __name__ == "__main__":
+def BridgeServer():
 
     # Start Server Threads
     _thread.start_new_thread(ControllerServer, ())
@@ -116,3 +116,7 @@ if __name__ == "__main__":
     # Main Loop
     while not closeBridgeServer:
         time.sleep(1)
+
+
+if __name__ == "__main__":
+    BridgeServer()

@@ -1,20 +1,31 @@
 import os
 import json
-from ChessUI.JSock import JSock
+from .JSock import JSock
 import time
+from multiprocessing import Process
+from .BridgeServer import BridgeServer
+from .TkinterControlee import TkinterControlee
 
 
 class ChessUI:
 
     jsock = None
+    bridgeServer = None
+    tkinterControlee = None
 
     def __init__(self, i, j):  # i行, j列; width=j, height=i
         # Start Bridge Server and Tkinter Controlee Processes
-        os.system("start .\\ChessUI\\Launcher1.vbs")
-        os.system("start .\\ChessUI\\Launcher2.vbs")
+        # os.system("start .\\ChessUI\\Launcher1.vbs")
+        # os.system("start .\\ChessUI\\Launcher2.vbs")
+
+        self.bridgeServer = Process(target=BridgeServer)
+        self.bridgeServer.start()
+
+        self.tkinterControlee = Process(target=TkinterControlee)
+        self.tkinterControlee.start()
 
         # Connect to the Bridge Server
-        self.jsock = JSock()
+        self.jsock = JSock(debug_=False)
         self.jsock.Connect("127.0.0.1", 16520)
 
         # Send SetSize Request
@@ -29,7 +40,7 @@ class ChessUI:
             self.jsock.SendStr("GetAction")
             result = self.jsock.RecvStr()
             if result == "NoNewAction":
-                time.sleep(0.01)
+                pass
             else:
                 break
 

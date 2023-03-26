@@ -64,7 +64,8 @@ class ChessBoard:
         self.Draw()
 
 
-cb = ChessBoard(9, 9, enableUI=True)
+if __name__ == "__main__":
+    cb = ChessBoard(9, 9, enableUI=True)
 
-while True:
-    cb.MakeMove()
+    while True:
+        cb.MakeMove()

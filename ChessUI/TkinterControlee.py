@@ -1,7 +1,7 @@
 import tkinter as tk
-from NativeAPI import EnableHighDPISupport, GetScreenResolution
+from .NativeAPI import EnableHighDPIMode, GetScreenResolution
 import json
-from JSock import JSock
+from .JSock import JSock
 import time
 
 # Preferences
@@ -10,10 +10,18 @@ root = None
 jsock = None
 canvas = None
 
+# Global Variables
+halfGridSize = None
+root = None
+canvas = None
+jsock = None
+width = None
+height = None
+
 
 def CreateWindow(width, height, title):
     root = tk.Tk()
-    root.geometry(str(width) + "x" + str(height))
+    root.geometry(str(width) + "x" + str(height) + "+10+10")
     root.title(title)
     return root
 
@@ -66,7 +74,7 @@ def MouseClickCallback(event):
 
     i = my // (2 * halfGridSize)
     j = mx // (2 * halfGridSize)
-    print(i, j)
+    # print(i, j)
 
     # CreatePiece(canvas, i, j, halfGridSize, fill="black", outline="black")
     jsock.SendStr("SetAction")
@@ -103,35 +111,40 @@ def IntervalFunction():
     root.after(1, IntervalFunction)
 
 
-if __name__ == "__main__":
+def TkinterControlee():
+    global highDPI, halfGridSize, root, canvas, jsock, width, height
+
     if highDPI:
-        EnableHighDPISupport()
+        EnableHighDPIMode()
 
     screenResolution = GetScreenResolution()
-    print(screenResolution)
-
-    if highDPI:
-        halfGridSize = int(0.03 * screenResolution[1])
-    else:
-        halfGridSize = 15
-    print(halfGridSize)
+    # print(screenResolution)
 
     # Get Chessboard Size
-    jsock = JSock()
+    jsock = JSock(debug_=False)
     jsock.Connect("127.0.0.1", 16521)
     width = None
     height = None
     while True:
         jsock.SendStr("GetSize")
         result = jsock.RecvStr()
-        print(result)
+        # print(result)
         if result != "NoNewSize":
             result = json.loads(result)
             width = result[0]
             height = result[1]
             break
         else:
-            time.sleep(0.01)
+            pass
+
+    if highDPI:
+        halfGridSize_Mode1 = int(0.03 * screenResolution[1])
+        halfGridSize_Mode2 = int(0.5 * 0.95 * screenResolution[1] / height)
+        halfGridSize_Mode3 = int(0.5 * 0.95 * screenResolution[0] / width)
+        halfGridSize = min(halfGridSize_Mode1, halfGridSize_Mode2, halfGridSize_Mode3)
+    else:
+        halfGridSize = 15
+    # print(halfGridSize)
 
     winWidth = width * 2 * halfGridSize
     winHeight = height * 2 * halfGridSize
@@ -147,3 +160,7 @@ if __name__ == "__main__":
     root.after(1, IntervalFunction)
 
     root.mainloop()
+
+
+if __name__ == "__main__":
+    TkinterControlee()
