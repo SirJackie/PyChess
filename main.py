@@ -60,6 +60,7 @@ class ChessBoard:
 
     def MakeMove(self):
         i, j = self.ui.GetAction()
+        i = 0  # You can only put new piece in the top girds
         self.state[i][j] = 1
         self.SimulateGravity(j)
         self.Draw()
